@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
 import axios from 'axios';
-
+import GlobalButtons from '../components/GlobalButton';
+import { Platform } from 'react-native';
 const HomeScreen = ({ navigation }) => {
   const [mesocycles, setMesocycles] = useState([]);
   const [exercises, setExercises] = useState([]);
@@ -33,7 +34,7 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Button title="Create New Mesocycle" onPress={() => navigation.navigate('Mesocycle')} />
+      {/* <Button title="Create New Mesocycle" onPress={() => navigation.navigate('Mesocycle')} /> */}
 
       {/* Display list of mesocycles
       <FlatList
@@ -51,20 +52,27 @@ const HomeScreen = ({ navigation }) => {
 
       {/* Display list of exercises */}
       <Text style={styles.sectionTitle}>Exercises</Text>
-      <FlatList
-        data={exercises}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.exerciseCard}>
-            <Text style={styles.exerciseTitle}>{item.name}</Text>
-            <Text>Name: {item.Name}</Text>
-            <Text>Muscle Group: {item.MuscleGroup}</Text>
-            <Text>Movement Type: {item.MovementType}</Text>
-            <Text>Notes: {item.Notes}</Text>
-          </View>   
-        )}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      />
+      <View style={styles.listContainer}>
+        <FlatList
+            data={exercises}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+            <View style={styles.exerciseCard}>
+                <Text style={styles.exerciseTitle}>{item.name}</Text>
+                <Text>Name: {item.Name}</Text>
+                <Text>Muscle Group: {item.MuscleGroup}</Text>
+                <Text>Movement Type: {item.MovementType}</Text>
+                <Text>Notes: {item.Notes}</Text>
+            </View>   
+            )}
+            contentContainerStyle={styles.listContent}
+        />
+      </View>
+      
+      <GlobalButtons 
+            onButton1Press={() => alert('Button 1 pressed')}
+            onButton2Press={() => alert('Button 2 pressed')}
+    />
     </View>
   );
 };
@@ -91,6 +99,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginVertical: 20,
     fontWeight: 'bold',
+  },
+  listContainer: {
+    flex: 1, // Allow the list to take up remaining space
+  },
+  listContent: {
+    paddingBottom: 20,
+    ...(Platform.OS === 'web' ? { maxHeight: '80vh' } : {}), // Add maxHeight only for web
   },
   exerciseCard: {
     padding: 10,
