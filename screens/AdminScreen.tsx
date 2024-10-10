@@ -1,11 +1,33 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, Button } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Button, Text } from 'react-native';
 import MesocycleForm from '../components/MesocycleForm';
 import GlobalButtons from '../components/GlobalButton';
 import { CustomScreenProps } from '../App';
+import axios from 'axios';
+import { Mesocycle } from '../models/models';
+
+export interface MesocycleCreationForm {
+  numberMicrocycles: number;
+  startDate: Date | null; // Change type to Date
+  objectives: string;
+}
 
 const AdminScreen: React.FC<CustomScreenProps> = ({ navigation }) => {  
   const [showMesocycleForm, setShowMesocycleForm] = useState(false);
+  const [createdMesocycle, setCreatedMesocycle] = useState<Mesocycle | null>(null);
+
+  const postMesocycle = async (mesocycleData: MesocycleCreationForm) => {
+    try {
+      console.log('Mesocycle:', mesocycleData);
+      const response = await axios.post('http://localhost:8080/mesocycles', mesocycleData); // Adjust endpoint as needed
+      console.log('Mesocycle created successfully:', response.data);
+      setCreatedMesocycle(response.data);
+      // You can navigate or update UI based on the response
+    } catch (error) {
+      console.error('Error posting mesocycle:', error);
+    }
+  };
+
   const handleCreateMesocycle = () => {
     setShowMesocycleForm(!showMesocycleForm); // Set state to show the MesocycleForm
   };
@@ -15,8 +37,9 @@ const AdminScreen: React.FC<CustomScreenProps> = ({ navigation }) => {
     <View style={styles.container}>
       <Button title="Create Mesocycle" onPress={handleCreateMesocycle} />
       {showMesocycleForm && (
-          <MesocycleForm onSubmit={(data: any) => {
+          <MesocycleForm onSubmit={(data: MesocycleCreationForm) => {
               console.log('Mesocycle Data:', data);
+              postMesocycle(data); 
               setShowMesocycleForm(false); 
           }} />
       )}
@@ -24,6 +47,20 @@ const AdminScreen: React.FC<CustomScreenProps> = ({ navigation }) => {
         onButton1Press={() => navigation.navigate('Home')}
         onButton2Press={() => navigation.navigate('Admin')}
       />
+      {createdMesocycle && 
+        <View>
+          <Text>{createdMesocycle.id}</Text>
+          <Text>{createdMesocycle.startDate}</Text>
+          <Text>{createdMesocycle.objectives}</Text>
+          {createdMesocycle.microcycles.map((microcycle, index) => (
+            <View key={index}>
+              <Text>Microcycle id: {microcycle.id}</Text>
+              <Text>{microcycle.startDate}</Text>
+              <Text>{microcycle.endDate}</Text>
+              </View>
+          ))} 
+    </View>
+    }
     </View>
   );
 };

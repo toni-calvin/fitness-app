@@ -1,25 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-import { useForm, Controller, SubmitHandler } from 'react-hook-form';
-
-interface MesocycleCreationForm {
-    numberMicrocycles: number;
-    startDate: string;
-    objectives: string;
-}
+import { useForm, Controller, SubmitHandler, set } from 'react-hook-form';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { MesocycleCreationForm } from '../screens/AdminScreen';
 
 interface MesocycleFormProps {
-    onSubmit: SubmitHandler<MesocycleCreationForm>; // Update to use SubmitHandler
+    onSubmit: SubmitHandler<MesocycleCreationForm>;
 }
 
 const MesocycleForm: React.FC<MesocycleFormProps> = ({ onSubmit }) => {
-    // Initialize the form methods with the correct type
     const { control, handleSubmit, formState: { errors } } = useForm<MesocycleCreationForm>(); 
+    const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
-    // This function will be called when the form is submitted
     const onSubmitHandler = (data: MesocycleCreationForm) => {
-        console.log('Form Data:', data); // Log the captured values
-        onSubmit(data); // Pass data to the parent component if needed
+        // Include the selected date in the submitted data
+        const formData = { ...data, startDate: selectedDate };
+        console.log('Form Data:', formData);
+        onSubmit(formData);
+    };
+
+    const handleDatePicked = (date: Date) => {
+        setSelectedDate(date);
+        setDatePickerVisibility(false); // Hide the date picker
     };
 
     return (
@@ -40,10 +43,10 @@ const MesocycleForm: React.FC<MesocycleFormProps> = ({ onSubmit }) => {
                         <TextInput
                             style={styles.input}
                             placeholder="Number of Microcycles"
-                            keyboardType="numeric" // Set keyboard type to numeric
+                            keyboardType="numeric"
                             onBlur={onBlur}
                             onChangeText={onChange}
-                            value={value?.toString()} // Convert number to string for display
+                            value={value?.toString()} 
                         />
                     )}
                 />
@@ -51,22 +54,17 @@ const MesocycleForm: React.FC<MesocycleFormProps> = ({ onSubmit }) => {
             </View>
 
             <View style={styles.startDateContainer}>
-                <Text style={styles.label}>Start Date:</Text>
-                <Controller
-                    control={control}
-                    name="startDate"
-                    rules={{ required: 'Start Date is required' }} // Add validation
-                    render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                            style={styles.input}
-                            placeholder="YYYY-MM-DD"
-                            onBlur={onBlur}
-                            onChangeText={onChange}
-                            value={value}
-                        />
-                    )}
-                />
-                {errors.startDate && <Text style={styles.errorText}>{errors.startDate.message}</Text>}
+              <View style={styles.startDateContainerValue}></View>
+                <Text style={styles.label}>Start Date: {selectedDate ? selectedDate.toDateString() : 'No date selected'}</Text>
+                <Button title="Select Date" onPress={() => setDatePickerVisibility(true)} />
+                {isDatePickerVisible && (
+                    <DateTimePicker
+                        mode='date'
+                        value={selectedDate || new Date()}
+                        onChange={(_, date) => handleDatePicked(date!)}
+                        onTouchCancel={() => setDatePickerVisibility(false)}
+                    />
+                )}
             </View>
 
             <View style={styles.objectivesContainer}>
@@ -74,7 +72,7 @@ const MesocycleForm: React.FC<MesocycleFormProps> = ({ onSubmit }) => {
                 <Controller
                     control={control}
                     name="objectives"
-                    rules={{ required: 'Objectives are required' }} // Add validation
+                    rules={{ required: 'Objectives are required' }} 
                     render={({ field: { onChange, onBlur, value } }) => (
                         <TextInput
                             style={styles.input}
@@ -88,7 +86,7 @@ const MesocycleForm: React.FC<MesocycleFormProps> = ({ onSubmit }) => {
                 {errors.objectives && <Text style={styles.errorText}>{errors.objectives.message}</Text>}
             </View>
 
-            <Button title="Submit" onPress={handleSubmit(onSubmitHandler)} /> {/* Use the handler here */}
+            <Button title="Submit" onPress={handleSubmit(onSubmitHandler)} />
         </View>
     );
 };
@@ -112,6 +110,11 @@ const styles = StyleSheet.create({
     },
     startDateContainer: {
         marginBottom: 20,
+    },
+    startDateContainerValue: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 20,
     },
     objectivesContainer: {
         marginBottom: 20,

@@ -48,23 +48,6 @@ const HomeScreen: React.FC<CustomScreenProps> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* <Button title="Create New Mesocycle" onPress={() => navigation.navigate('Mesocycle')} /> */}
-
-      {/* Display list of mesocycles
-      <FlatList
-        data={mesocycles}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.mesocycleCard}>
-            <Text style={styles.title}>Mesocycle {item.id}</Text>
-            <Text>Preparation Level: {item.preparation_level}</Text>
-            <Text>Comments: {item.comments}</Text>
-            <Text>Objectives: {item.objectives}</Text>
-          </View>
-        )}
-      /> */}
-
-      {/* Display list of exercises */}
       <Text style={styles.sectionTitle}>Exercises</Text>
       <View style={styles.listContainer}>
         <FlatList
