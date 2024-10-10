@@ -5,6 +5,7 @@ import GlobalButtons from '../components/GlobalButton';
 import { CustomScreenProps } from '../App';
 import axios from 'axios';
 import { Mesocycle } from '../models/models';
+import MesocycleCard from '../components/MesocycleCard';
 
 export interface MesocycleCreationForm {
   numberMicrocycles: number;
@@ -47,20 +48,7 @@ const AdminScreen: React.FC<CustomScreenProps> = ({ navigation }) => {
         onButton1Press={() => navigation.navigate('Home')}
         onButton2Press={() => navigation.navigate('Admin')}
       />
-      {createdMesocycle && 
-        <View>
-          <Text>{createdMesocycle.id}</Text>
-          <Text>{createdMesocycle.startDate}</Text>
-          <Text>{createdMesocycle.objectives}</Text>
-          {createdMesocycle.microcycles.map((microcycle, index) => (
-            <View key={index}>
-              <Text>Microcycle id: {microcycle.id}</Text>
-              <Text>{microcycle.startDate}</Text>
-              <Text>{microcycle.endDate}</Text>
-              </View>
-          ))} 
-    </View>
-    }
+      {createdMesocycle && <MesocycleCard mesocycle={createdMesocycle} />} 
     </View>
   );
 };
