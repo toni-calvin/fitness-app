@@ -1,7 +1,12 @@
 import React from 'react';
 import { View, Button, StyleSheet } from 'react-native';
 
-const GlobalButtons = ({ onButton1Press, onButton2Press }) => {
+type GlobalButtonsProps = {
+  onButton1Press: () => void;
+  onButton2Press: () => void;
+};
+
+const GlobalButtons: React.FC<GlobalButtonsProps> = ({ onButton1Press, onButton2Press }) => {
   return (
     <View style={styles.container}>
       <Button title="Button 1" onPress={onButton1Press} />

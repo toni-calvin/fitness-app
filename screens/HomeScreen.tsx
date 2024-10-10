@@ -1,9 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, FlatList, StyleSheet } from 'react-native';
+import { View, Text, Button, FlatList, StyleSheet, Dimensions } from 'react-native';
 import axios from 'axios';
 import GlobalButtons from '../components/GlobalButton';
 import { Platform } from 'react-native';
-const HomeScreen = ({ navigation }) => {
+import { NavigationProp } from '@react-navigation/native';
+import { CustomScreenProps } from '../App';
+
+interface Exercise {
+  id: number;
+  name: string;
+  MuscleGroup: string;
+  MovementType: string;
+  Notes: string;
+}
+
+
+const HomeScreen: React.FC<CustomScreenProps> = ({ navigation }) => {
+  
   const [mesocycles, setMesocycles] = useState([]);
   const [exercises, setExercises] = useState([]);
 
@@ -22,7 +35,6 @@ const HomeScreen = ({ navigation }) => {
       try {
         const response = await axios.get('http://localhost:8080/exercises'); // Replace with your exercises endpoint
         setExercises(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error('Error fetching exercises:', error);
       }
@@ -31,6 +43,8 @@ const HomeScreen = ({ navigation }) => {
     // fetchMesocycles();
     fetchExercises();
   }, []);
+
+  const windowHeight = Dimensions.get('window').height;
 
   return (
     <View style={styles.container}>
@@ -55,7 +69,7 @@ const HomeScreen = ({ navigation }) => {
       <View style={styles.listContainer}>
         <FlatList
             data={exercises}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item: any) => item.id.toString()}
             renderItem={({ item }) => (
             <View style={styles.exerciseCard}>
                 <Text style={styles.exerciseTitle}>{item.name}</Text>
@@ -65,13 +79,16 @@ const HomeScreen = ({ navigation }) => {
                 <Text>Notes: {item.Notes}</Text>
             </View>   
             )}
-            contentContainerStyle={styles.listContent}
+            contentContainerStyle={[
+              styles.listContent,
+              Platform.OS === 'web' ? { maxHeight: windowHeight * 0.8 } : {},
+            ]}
         />
       </View>
       
       <GlobalButtons 
-            onButton1Press={() => alert('Button 1 pressed')}
-            onButton2Press={() => alert('Button 2 pressed')}
+            onButton1Press={() => navigation.navigate('Home')}
+            onButton2Press={() => navigation.navigate('Admin')}
     />
     </View>
   );
@@ -101,11 +118,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   listContainer: {
-    flex: 1, // Allow the list to take up remaining space
+    flex: 1, 
   },
   listContent: {
     paddingBottom: 20,
-    ...(Platform.OS === 'web' ? { maxHeight: '80vh' } : {}), // Add maxHeight only for web
   },
   exerciseCard: {
     padding: 10,
