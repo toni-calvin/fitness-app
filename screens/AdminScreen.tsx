@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Button, Text } from 'react-native';
+import { View, StyleSheet, Button, Text, Platform } from 'react-native';
 import MesocycleForm from '../components/MesocycleForm';
 import GlobalButtons from '../components/GlobalButton';
 import { CustomScreenProps } from '../App';
 import axios from 'axios';
 import { Mesocycle } from '../models/models';
-import MesocycleCard from '../components/MesocycleCard';
+import MesocycleList from '../components/MesocycleList';
 
 export interface MesocycleCreationForm {
   numberMicrocycles: number;
@@ -15,19 +15,33 @@ export interface MesocycleCreationForm {
 
 const AdminScreen: React.FC<CustomScreenProps> = ({ navigation }) => {  
   const [showMesocycleForm, setShowMesocycleForm] = useState(false);
-  const [createdMesocycle, setCreatedMesocycle] = useState<Mesocycle | null>(null);
+  const [mesocycles, setMesocycles] = useState<[Mesocycle] | null>(null);
+
+  const getMesocycles = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/mesocycles'); 
+      console.log('Mesocycles:', response.data);
+      setMesocycles(response.data);
+    } catch (error) {
+      console.error('Error getting mesocycles:', error);
+    }
+  }
 
   const postMesocycle = async (mesocycleData: MesocycleCreationForm) => {
     try {
       console.log('Mesocycle:', mesocycleData);
-      const response = await axios.post('http://localhost:8080/mesocycles', mesocycleData); // Adjust endpoint as needed
+      const response = await axios.post('http://localhost:8080/mesocycles', mesocycleData); 
       console.log('Mesocycle created successfully:', response.data);
-      setCreatedMesocycle(response.data);
+      getMesocycles();
       // You can navigate or update UI based on the response
     } catch (error) {
       console.error('Error posting mesocycle:', error);
     }
   };
+
+  useEffect(() => {
+    getMesocycles();
+  }, []);
 
   const handleCreateMesocycle = () => {
     setShowMesocycleForm(!showMesocycleForm); // Set state to show the MesocycleForm
@@ -44,11 +58,13 @@ const AdminScreen: React.FC<CustomScreenProps> = ({ navigation }) => {
               setShowMesocycleForm(false); 
           }} />
       )}
+      {
+        mesocycles?.length! > 0 && <MesocycleList mesocycles={mesocycles!} />
+      }
       <GlobalButtons 
         onButton1Press={() => navigation.navigate('Home')}
         onButton2Press={() => navigation.navigate('Admin')}
       />
-      {createdMesocycle && <MesocycleCard mesocycle={createdMesocycle} />} 
     </View>
   );
 };

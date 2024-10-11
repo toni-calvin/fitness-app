@@ -10,9 +10,9 @@ export interface Exercise {
     id: number;
     name: string;
     sets: [Set];
-    MuscleGroup: string;
-    MovementType: string;
-    Notes: string;
+    muscleGroup: string;
+    movementType: string;
+    notes: string;
 }
 
 export interface Training {
@@ -36,4 +36,5 @@ export interface Mesocycle {
     endDate: string;
     microcycles: [Microcycle];
     objectives: string;
+    progressRate: number;
 }

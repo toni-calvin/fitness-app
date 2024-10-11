@@ -5,6 +5,7 @@ import GlobalButtons from '../components/GlobalButton';
 import { Platform } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import { CustomScreenProps } from '../App';
+import ExcerciseList from '../components/ExcerciseList';
 
 interface Exercise {
   id: number;
@@ -44,31 +45,10 @@ const HomeScreen: React.FC<CustomScreenProps> = ({ navigation }) => {
     fetchExercises();
   }, []);
 
-  const windowHeight = Dimensions.get('window').height;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.sectionTitle}>Exercises</Text>
-      <View style={styles.listContainer}>
-        <FlatList
-            data={exercises}
-            keyExtractor={(item: any) => item.id.toString()}
-            renderItem={({ item }) => (
-            <View style={styles.exerciseCard}>
-                <Text style={styles.exerciseTitle}>{item.name}</Text>
-                <Text>Name: {item.Name}</Text>
-                <Text>Muscle Group: {item.MuscleGroup}</Text>
-                <Text>Movement Type: {item.MovementType}</Text>
-                <Text>Notes: {item.Notes}</Text>
-            </View>   
-            )}
-            contentContainerStyle={[
-              styles.listContent,
-              Platform.OS === 'web' ? { maxHeight: windowHeight * 0.8 } : {},
-            ]}
-        />
-      </View>
-      
+    <View style={styles.container}>    
+      <ExcerciseList exercises={exercises} /> 
       <GlobalButtons 
             onButton1Press={() => navigation.navigate('Home')}
             onButton2Press={() => navigation.navigate('Admin')}
@@ -95,29 +75,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  sectionTitle: {
-    fontSize: 20,
-    marginVertical: 20,
-    fontWeight: 'bold',
-  },
-  listContainer: {
-    flex: 1, 
-  },
-  listContent: {
-    paddingBottom: 20,
-  },
-  exerciseCard: {
-    padding: 10,
-    marginVertical: 10,
-    backgroundColor: '#e0e0e0',
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: '#ccc',
-  },
-  exerciseTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+
 });
 
 export default HomeScreen;
