@@ -9,7 +9,7 @@ export interface Set {
 export interface Exercise {
     id: number;
     name: string;
-    sets: [Set];
+    sets: Set[];
     muscleGroup: string;
     movementType: string;
     notes: string;

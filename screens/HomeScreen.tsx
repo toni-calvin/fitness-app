@@ -6,7 +6,7 @@ import { Platform } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import { CustomScreenProps } from '../App';
 import ExcerciseList from '../components/ExcerciseList';
-
+import TrainingCard from '../components/TrainingCard'
 interface Exercise {
   id: number;
   name: string;
@@ -48,7 +48,7 @@ const HomeScreen: React.FC<CustomScreenProps> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>    
-      <ExcerciseList exercises={exercises} /> 
+      <TrainingCard/>
       <GlobalButtons 
             onButton1Press={() => navigation.navigate('Home')}
             onButton2Press={() => navigation.navigate('Admin')}
